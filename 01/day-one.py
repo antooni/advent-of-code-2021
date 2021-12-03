@@ -1,8 +1,11 @@
+import os
+path = os.path.abspath('./input.txt')
+
 # PART 1
 counter = 0
 previous = -1
 
-with open('input.txt') as f:
+with open(path) as f:
     for line in f:
         if previous == -1:
             previous = int(line)
@@ -17,7 +20,7 @@ print('Part 1 solution: ',counter)
 counter = 0
 lines = []
 
-with open('input.txt') as f:
+with open(path) as f:
     line = f.readline()
     while line:
         lines.append(int(line))

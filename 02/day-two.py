@@ -1,46 +1,57 @@
-import os
-path = os.path.abspath('./input.txt')
+from pathlib import Path
+from dataclasses import dataclass
 
-class Coordinates:
-    def __init__(self, x, y, aim):
-        self.x = x
-        self.y = y
-        self.aim = aim
+def main():
+    path = Path(__file__).resolve().parents[0].joinpath('input.txt')
+    @dataclass
+    class Coordinates:
+        x: float
+        y:float
+        aim:float
 
-
-def moveForward(cords: Coordinates, value) :
-    cords.x += value
-    cords.y += cords.aim * value
-    return cords
-
-
-def moveUp(cords, value) :
-    cords.aim -= value
-    return cords
+    def move_forward(cords: Coordinates, value) :
+        print('forward')
+        cords.x += value
+        cords.y += cords.aim * value
+        return cords
 
 
-def moveDown(cords, value) :
-    cords.aim += value
-    return cords
+    def move_up(cords, value) :
+        print('forward')
 
-dict = {
-    "forward": moveForward,
-    "up":moveUp,
-    "down":moveDown,
-}
+        cords.aim -= value
+        return cords
 
 
-def getDirection(line):
-    return line.split(' ')[0]
+    def move_down(cords, value) :
+        print('forward')
 
-def getValue(line):
-    return int(line.split(' ')[1])
+        cords.aim += value
+        return cords
 
-with open(path) as f:
-    cords = Coordinates(0,0,0)
-    for line in f:
-        cords = dict[getDirection(line)](cords, getValue(line))
+    move_fun = {
+        "forward": move_forward,
+        "up":move_up,
+        "down":move_down,
+    }
 
-    print('x = ', cords.x)
-    print('y = ', cords.y)
-    print('multiplied = ', cords.x * cords.y)
+    def get_direction(line):
+        return line.split(' ')[0]
+
+    def get_value(line):
+        return int(line.split(' ')[1])
+
+    with open(path) as f:
+        cords = Coordinates(0,0,0)
+        for line in f:
+            direction = get_direction(line)
+            step = get_value(line)
+            # print(direction,' ', step)
+            cords = move_fun[direction](cords, step)
+
+        print('x = ', cords.x)
+        print('y = ', cords.y)
+        print('multiplied = ', cords.x * cords.y)
+
+if __name__ == '__main__':
+    main()

@@ -1,44 +1,28 @@
 from pathlib import Path
 import numpy as np
   
+CROSSED = -1
+  
 def main():
-    path = Path(__file__).resolve().parents[0].joinpath('input.txt')
-    
+    path = Path(__file__).resolve().parents[0].joinpath('example.txt')
+
+#PART 1
     draw = get_draw(path)
     cards = get_cards(path)
         
     won = False
     for d in draw:
         for i, card in enumerate(cards):
-            card[card==d] = -1
-            card = np.array(card).reshape(5,5)
-            cards[i] = card
+            card = cross_number(card, d)
             
-            for x in card:
-                isWinning = True
-                for y in x:
-                    if(y != -1):
-                        isWinning = False
-                if(isWinning):
-                    won = True
-                    card[card==-1] = 0
-                    sum = np.sum(card)
-                    print('WIN ',sum * d)
-                    
-            for col in range(card.shape[1]):
-                isWinning = True
-                for y in card[:,col]:
-                    if y != -1:
-                        isWinning = False
-                if(isWinning):
-                    won = True
-                    card[card==-1] = 0
-                    sum = np.sum(card)
-                    print('WIN ',sum * d)
+            if(is_row_winning(card) or is_column_winning(card)):
+                won = True
+                result = sum_up_card(card) * d
+                print('BINGO!!! result =',result)
+                break
+                
         if(won):
-            break
-        
-            
+            break           
 # PART 2
     draw = get_draw(path)
     cards = get_cards(path)
@@ -47,39 +31,46 @@ def main():
     
     for d in draw:
         for i, card in enumerate(cards):
-            card[card==d] = -1
-            card = np.array(card).reshape(5,5)
-            cards[i] = card
+            card = cross_number(card, d)
             
-            won = False
-            for x in card:
-                isWinning = True
-                for y in x:
-                    if(y != -1):
-                        isWinning = False
-                if(isWinning):
-                    if(len(cards) - 1 == len(won_ids) and i not in won_ids):
-                        card[card==-1]=0
-                        sum = np.sum(card)
-                        print('WIN ',sum * d)
-                    else:
-                        won = True
-                        won_ids.add(i)
-            if(won):
-                continue            
-                    
-            for col in range(card.shape[1]):
-                isWinning = True
-                for y in card[:,col]:
-                    if y != -1:
-                        isWinning = False
-                if(isWinning):
-                    if(len(cards) - 1 == len(won_ids) and i not in won_ids):
-                        card[card==-1]=0
-                        sum = np.sum(card)
-                        print('WIN ',sum * d)
-                    else:
-                        won_ids.add(i) 
+            if(is_row_winning(card) or is_column_winning(card)):
+                won_ids.add(i)
+                
+                if(len(cards) == len(won_ids)):
+                    result = sum_up_card(card) * d
+                    print('BINGO!!! result =',result)
+                    break
+
+        if(len(cards) == len(won_ids)):
+            break
+            
+def sum_up_card(card):
+    card[card == CROSSED] = 0
+    return np.sum(card)
+
+def cross_number(card, number):
+    card[card == number] = CROSSED
+    return np.array(card).reshape(5,5)
+    
+def is_row_winning(card):
+    for x in card:
+        isWinning = True
+        for y in x:
+            if(y != CROSSED):
+                isWinning = False
+        if(isWinning):
+            return True
+    return False
+
+def is_column_winning(card):    
+    for col in range(card.shape[1]):
+        isWinning = True
+        for y in card[:,col]:
+            if y != CROSSED:
+                isWinning = False
+        if(isWinning):
+            return True
+    return False    
 
 def get_draw(path):
     return [int(x) for x in open(path).readline().strip('\n').split(',')]

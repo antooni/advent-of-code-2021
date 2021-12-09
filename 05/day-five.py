@@ -21,8 +21,8 @@ def calc_lines_overlaps(sonar_readings, map_size, include_diagonal_flag):
 
     for coords in sonar_readings:
         points = coords.strip('\n').split(' -> ')
-        p1 = Point(int(points[0].split(',')[0]), int(points[0].split(',')[1]))
-        p2 = Point(int(points[1].split(',')[0]), int(points[1].split(',')[1]))
+        p1 = Point(*[int(v) for v in points[0].split(',')])
+        p2 = Point(*[int(v) for v in points[1].split(',')])
         
         if(p1.x == p2.x):
             start = min(p1.y, p2.y)

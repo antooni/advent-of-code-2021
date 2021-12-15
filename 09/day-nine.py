@@ -22,23 +22,27 @@ def is_low_point(i, j, array):
     return True
         
 def move_wrapper(i,j,numbers):
-    sum = 0
-    sum += move(i+1,j,1,0,numbers)
-    sum += move(i-1,j,-1,0,numbers)
-    sum += move(i,j+1,0,1,numbers)
-    sum += move(i,j-1,0,-1,numbers)
-    return sum
+    sum = 1
+    numbers[i][j] = -1
     
-def move(x,y,dirX, dirY, array):
-
-    if x + dirX <= 0 or x + dirX >= len(array):
-        return 1
-    if y + dirY <= 0 or y + dirY >= len(array[x]):
-        return 1
-    if array[x+dirX][y+dirY] == 9:
-        return 1
-    return 1 + move(x + dirX, y + dirY, dirX, dirY, array)
-    
+    if i < len(numbers) - 1:
+        if numbers[i+1][j] != -1:
+            if numbers[i+1][j] != 9:
+                sum += move_wrapper(i+1,j,numbers)
+    if i > 0:
+        if numbers[i-1][j] != -1:
+            if numbers[i-1][j] != 9:
+                sum += move_wrapper(i-1,j,numbers)
+    if j < len(numbers[i]) - 1:
+        if numbers[i][j+1] != -1:
+            if numbers[i][j+1] != 9:
+                sum += move_wrapper(i,j+1,numbers)
+    if j > 0:
+        if numbers[i][j-1] != -1:
+            if numbers[i][j-1] != 9:
+                sum += move_wrapper(i,j-1,numbers)
+        
+    return sum  
 
 with open(path) as f:
     line = f.readline()
@@ -47,20 +51,13 @@ with open(path) as f:
         line = f.readline()
 
 results = []
-sum = 0  
 
 
 for i, x in enumerate(numbers):
     for j, y in enumerate(x):
         if(is_low_point(i, j, numbers)):
             print(y)
-            # sum = 0
-            sum += y + 1
-            # sum += move(i+1,j,1,0,numbers)
-            # sum += move(i-1,j,-1,0,numbers)
-            # sum += move(i,j+1,0,1,numbers)
-            # sum += move(i,j-1,0,-1,numbers)
-            # results.append(sum)
-
+            results.append(move_wrapper(i,j,numbers))
+            
     
-print(sum)
+print(sorted(results))

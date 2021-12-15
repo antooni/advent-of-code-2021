@@ -50,14 +50,18 @@ with open(path) as f:
         numbers.append([int(v) for v in line.strip('\n')])
         line = f.readline()
 
-results = []
 
+risk_level_sum = 0
+basins = []
 
 for i, x in enumerate(numbers):
     for j, y in enumerate(x):
         if(is_low_point(i, j, numbers)):
-            print(y)
-            results.append(move_wrapper(i,j,numbers))
+            risk_level_sum += y + 1
+            basins.append(move_wrapper(i,j,numbers))
             
-    
-print(sorted(results))
+print('PART 1 - risk level sum: ', risk_level_sum)
+
+basins = sorted(basins)
+n = len(basins) - 1
+print('PART 2 - basins: ', basins[n] * basins[n-1] * basins[n-2])

@@ -4,66 +4,57 @@ path = Path(__file__).resolve().parent.joinpath('input.txt')
 
 lines = open(path).readlines()
 
-corrupted = []
-
-closing_tags = {
+OPENING_BRACKETS = {
     ')': '(',
     ']': '[',
     '}': '{',
     '>': '<',
 }
 
-scores = {
+INVALID_SCORING = {
     ')': 3,
     ']': 57,
     '}': 1197,
     '>': 25137,
 }
 
-incomplete_lines = []
+invalid_score = 0
+dangling_brackets = []
 
 for line in lines:
     line = line.strip('\n')
     syntax_stack = []
     
-    incorrect_flag = False
     for c in line:
         if c in ['[','(','{','<']:
             syntax_stack.append(c)
-        if c in [']',')','}','>']:
-            if closing_tags[c] != syntax_stack[len(syntax_stack)-1]:
-                corrupted.append(c)
-                incorrect_flag = True
+            
+        elif c in [']',')','}','>']:
+            if OPENING_BRACKETS[c] != syntax_stack[len(syntax_stack)-1]:
+                invalid_score += INVALID_SCORING[c]
+                syntax_stack = []
                 break
-            if closing_tags[c] == syntax_stack[len(syntax_stack)-1]:
+            else:
                 syntax_stack.pop(len(syntax_stack)-1)
 
-    if not incorrect_flag:
-        incomplete_lines.append(syntax_stack)
-
-
-autocomplete_scores = {
+    if len(syntax_stack):
+        dangling_brackets.append(syntax_stack)
+        
+print('PART 1 - invalid score: ', invalid_score)
+        
+AUTOCOMPLETE_SCORING = {
     '(': 1,
     '[': 2,
     '{': 3,
     '<': 4,
 }
 
-
-
-sum = 0 
-for c in corrupted:
-    sum += scores[c]
-print(sum)
-
-auto_results = []
-for line in incomplete_lines:
+autocomplete_scores = []
+for line in dangling_brackets:
     tmp = 0
     line.reverse()
     for c in line:
-        tmp = tmp*5 + autocomplete_scores[c]
-    auto_results.append(tmp)
-
+        tmp = tmp*5 + AUTOCOMPLETE_SCORING[c]
+    autocomplete_scores.append(tmp)
     
-    
-print(sorted(auto_results)[int(len(auto_results)/2)])
+print('PART 2 - autocomplete score: ',sorted(autocomplete_scores)[int(len(autocomplete_scores)/2)])
